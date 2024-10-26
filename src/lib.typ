@@ -1,3 +1,6 @@
+#let _p = plugin("parser.wasm")
+
+
 /// The identity function
 ///
 /// #example(mode: "markup", ```typ
@@ -7,4 +10,9 @@
 ///
 /// - x (any): some parameter
 /// -> any
-#let id(x) = x
+#let id(x) = {
+  let foo = "foo"
+  let foofoo = str(_p.concatenate(bytes(foo), bytes(foo)))
+  assert.eq(foofoo, foo * 2)
+  x
+}
