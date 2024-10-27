@@ -39,6 +39,36 @@ $2 * (2 + x) arrow.double.long$ #my-package.parse("2 * (2 + x)")
 $2 * (2 + x) arrow.double.long^(x=3)$ #my-package.eval("2 * (2 + x)", x: 3)
 ```)
 
+= Plugin implementation
+
+This plugin uses #link("https://lalrpop.github.io/lalrpop/")[LALRPOP] to implement a parser for a domain specific language (DSL) in Rust; in particular, the parser is for mathematical expressions based on the #link("https://lalrpop.github.io/lalrpop/tutorial/007_fallible_actions.html")[LALRPOP tutorial].
+
+Here are some relevant excerpts from the plugin's code:
+
+#file-code("ast.rs", {
+  let lib = raw(block: true, lang: "rust", read("/plugin/src/ast.rs").trim(at: end))
+  lib = crudo.lines(lib, "7-33")
+  lib
+})
+
+#file-code("parser/mod.rs", {
+  let lib = raw(block: true, lang: "rust", read("/plugin/src/parser/mod.rs").trim(at: end))
+  lib = crudo.lines(lib, "4-17")
+  lib
+})
+
+#file-code("grammar.lalrpop", {
+  show: template.codly.local.with(languages: (
+    rust: (name: "lalrpop"),
+  ))
+
+  let lib = raw(block: true, lang: "rust", read("/plugin/src/parser/grammar.lalrpop").trim(at: end))
+  lib = crudo.lines(lib, "7-8, 13-22, 24-29, 41-")
+  lib
+})
+
+#pagebreak(weak: true)
+
 = Module reference
 
 #module(
