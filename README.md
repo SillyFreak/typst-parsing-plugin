@@ -29,9 +29,15 @@ A short description about the project and/or client.
 To add this package to your project, use this:
 
 ```typ
-#import "@preview/my-package:0.1.0": *
+#import "@preview/my-package:0.0.1": *
 
-#id[Hello World]
+#let expr = "2 * (2 + x)"
+
+#eval(mode: "math", expr)
+
+#my-package.parse(expr)
+
+#my-package.eval(expr, x: 3)
 ```
 
 ![Example](./thumbnail.png)
