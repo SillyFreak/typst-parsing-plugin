@@ -4,14 +4,27 @@
 // https://github.com/lalrpop/lalrpop/blob/793df8d6b4fa1c1bc9c253ee7c173d25cb202a9d/LICENSE-MIT
 
 use std::fmt::{Debug, Error, Formatter};
+use serde::{Serialize, Deserialize};
 
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
+#[serde(tag = "type")]
+#[serde(rename_all = "kebab-case", rename_all_fields = "kebab-case")]
 pub enum Expr<'input> {
-    Number(i32),
-    Variable(&'input str),
-    Binary(Operator, Box<Expr<'input>>, Box<Expr<'input>>),
+    Number {
+        value: i32,
+    },
+    Variable {
+        name: &'input str,
+    },
+    Binary {
+        operator: Operator,
+        left: Box<Expr<'input>>,
+        right: Box<Expr<'input>>,
+    },
 }
 
-#[derive(Copy, Clone)]
+#[derive(Serialize, Deserialize, Clone, Copy, PartialEq)]
+#[serde(rename_all = "kebab-case", rename_all_fields = "kebab-case")]
 pub enum Operator {
     Mul,
     Div,
@@ -23,9 +36,13 @@ impl<'input> Debug for Expr<'input> {
     fn fmt(&self, fmt: &mut Formatter) -> Result<(), Error> {
         use self::Expr::*;
         match *self {
-            Number(n) => write!(fmt, "{:?}", n),
-            Variable(v) => write!(fmt, "{}", v),
-            Binary(op, ref l, ref r) => write!(fmt, "({:?} {:?} {:?})", l, op, r),
+            Number { value } => write!(fmt, "{:?}", value),
+            Variable { name } => write!(fmt, "{}", name),
+            Binary {
+                operator,
+                ref left,
+                ref right,
+             } => write!(fmt, "({:?} {:?} {:?})", left, operator, right),
         }
     }
 }

@@ -11,7 +11,11 @@ use lalrpop_util::ParseError;
 grammar;
 
 Tier<Op, NextTier>: Expr<'input> = {
-    <l: Tier<Op, NextTier>> <op: Op> <r: NextTier> => Expr::Binary(op, Box::new(l), Box::new(r)),
+    <left: Tier<Op, NextTier>> <operator: Op> <right: NextTier> => {
+        let left = Box::new(left);
+        let right = Box::new(right);
+        Expr::Binary { operator, left, right }
+    },
     NextTier
 };
 
@@ -29,8 +33,8 @@ FactorOp: Operator = {
 };
 
 Term: Expr<'input> = {
-    Num => Expr::Number(<>),
-    Var => Expr::Variable(<>),
+    Num => Expr::Number { value: <> },
+    Var => Expr::Variable { name: <> },
     "(" <Expr> ")"
 };
 
