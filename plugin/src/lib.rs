@@ -13,15 +13,25 @@ where
     Ok(writer)
 }
 
+trait MapErrToString<T> {
+    fn map_err_to_string(self) -> Result<T, String>;
+}
+
+impl<T, E: ToString> MapErrToString<T> for Result<T, E> {
+    fn map_err_to_string(self) -> Result<T, String> {
+        self.map_err(|err| err.to_string())
+    }
+}
+
 #[cfg(target_arch = "wasm32")]
 wasm_minimal_protocol::initiate_protocol!();
 
 #[cfg_attr(target_arch = "wasm32", wasm_func)]
-pub fn parse(expr: &[u8]) -> Vec<u8> {
-    let expr: String = ciborium::from_reader(expr).unwrap();
-    let expr = parser::parse(&expr).unwrap();
-    let expr = cbor_encode(&expr).unwrap();
-    expr
+pub fn parse(expr: &[u8]) -> Result<Vec<u8>, String> {
+    let expr: String = ciborium::from_reader(expr).map_err_to_string()?;
+    let expr = parser::parse(&expr).map_err_to_string()?;
+    let expr = cbor_encode(&expr).map_err_to_string()?;
+    Ok(expr)
 }
 
 #[cfg(test)]
